@@ -62,7 +62,7 @@ session_facts as (
       ,  SUM(case when sl.event_name = 'page_view' then 1 else 0 end) session_page_view_count
       ,  COALESCE(SUM((select value.int_value from UNNEST(sl.event_params) where key = "engaged_session_event")),0) engaged_events
       ,  case when (COALESCE(SUM((select value.int_value from UNNEST(sl.event_params) where key = "engaged_session_event")),0) = 0
-               and COALESCE(SUM((select coalesce(cast(value.string_value as INT64),value.int_value) from UNNEST(sl.event_params) where key = "session_engaged"))) = 0)
+               and COALESCE(SUM((select coalesce(SAFE_CAST(value.string_value as INT64),value.int_value) from UNNEST(sl.event_params) where key = "session_engaged"))) = 0)
               then false else true end as is_engaged_session
             , case when countif(event_name = 'first_visit') = 0 then false else true end as is_first_visit_session
             , MAX(TIMESTAMP_MICROS(sl.event_timestamp)) as session_end
