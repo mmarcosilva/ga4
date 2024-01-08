@@ -9,6 +9,8 @@ In order to mirror a lot of the high level dashboards you see in your existing G
 - Event Level Data linked to a specific Session (events.view + extended views)
 - Retention Cohort Analysis capabilities (audience_cohorts.view)
 - Looker dimension for every combination of \_event\_name\_ / \_event\_params.key\_ and \_user_properties_ (event\_data\_dimensions folder) for the automatically collected data.
+- A Propensity Model written in BigQuery ML for getting predictive analytics on your customers.
+
 
 GA4 data is exported in the format of a single flat table with a new entry for each event
 This is is similar to Google's Firebase output and can be difficult to query due to date-based partitioned tables and a need for unnesting in all but the most high-level queries.
