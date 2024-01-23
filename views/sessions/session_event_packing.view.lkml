@@ -1,7 +1,7 @@
 include: "/views/sessions/session_list_with_event_history.view.lkml"
 view: session_event_packing {
   derived_table:{
-    sql_trigger_value:${session_list_with_event_history.SQL_TABLE_NAME};;
+    sql_trigger_value:${session_facts.SQL_TABLE_NAME};;
     partition_keys: ["session_date"]
     cluster_keys: ["session_date"]
     increment_key: "session_date"
@@ -40,6 +40,7 @@ view: session_event_packing {
                           , sl.ecommerce
                           , sl.items)) event_data
     from ${session_list_with_event_history.SQL_TABLE_NAME} AS sl
+    WHERE sl.sl_key IN (SELECT sl_key FROM ${session_facts.SQL_TABLE_NAME} WHERE session_event_count <`@{EVENT_COUNT}`)
   group by 1,2,3,4,5;;
   }
 }
