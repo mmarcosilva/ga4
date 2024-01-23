@@ -1,7 +1,7 @@
 connection: "@{GA4_CONNECTION}"
 
 
-label: "Google Analytics 4 Beta"
+label: "Google Analytics 4"
 
 include: "/dashboards/*.dashboard"
 include: "/explores/*.explore.lkml"
