@@ -1,4 +1,4 @@
-project_name: "ga4_block"
+project_name: "test_ga4_beta"
 
 ## Connection Constants:
 constant: GA4_CONNECTION {
@@ -13,6 +13,10 @@ constant: GA4_SCHEMA {
 
 constant: GA4_TABLE_VARIABLE {
   value: "events_*"
+  export: override_optional
+}
+constant: EVENT_COUNT {
+  value: "5000"
   export: override_optional
 }
 
