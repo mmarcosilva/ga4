@@ -16,8 +16,8 @@ constant: GA4_TABLE_VARIABLE {
   export: override_optional
 }
 constant: EVENT_COUNT {
-  value: "NULL"
-  export: override_required
+  value: ""
+  export: override_optional
 }
 constant: model_step_prediction {
   value: "60"
