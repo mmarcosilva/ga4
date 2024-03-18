@@ -60,6 +60,7 @@ left join ${session_facts.SQL_TABLE_NAME} sf
   on  se.sl_key = sf.sl_key
 left join ${device_geo.SQL_TABLE_NAME} d
   on  se.sl_key = d.sl_key
+where {% incrementcondition %} session_date {% endincrementcondition %}
    ;;
   }
 
