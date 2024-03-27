@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - release_workflow
 
 # Cancels an release workflows in progress
 concurrency:
@@ -16,5 +16,5 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: looker-open-source/reusable-actions/.github/workflows/marketplace-viz-release.yml@main
+    uses: looker-open-source/reusable-actions/.github/workflows/marketplace-viz-release.yml@blocks_workflow
     secrets: inherit
