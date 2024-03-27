@@ -16,5 +16,5 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: looker-open-source/reusable-actions/.github/workflows/marketplace-viz-release.yml@blocks_workflow
+    uses: looker-open-source/reusable-actions/.github/workflows/marketplace-block-release.yml@blocks_workflow
     secrets: inherit
