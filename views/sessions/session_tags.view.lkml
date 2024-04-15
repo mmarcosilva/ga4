@@ -11,7 +11,7 @@ view: session_tags{
   , first_value(case when ep.key = 'source' then ep.value.string_value end) over (partition by sl.sl_key order by sl.event_timestamp desc) source
   , first_value(case when ep.key = 'campaign' then ep.value.string_value end) over (partition by sl.sl_key order by sl.event_timestamp desc) campaign
   , first_value(case when ep.key = 'page_referrer' then ep.value.string_value end) over (partition by sl.sl_key order by sl.event_timestamp desc) page_referrer
-from ${session_list_w_event_hist.SQL_TABLE_NAME} AS sl
+from ${session_list_with_event_history.SQL_TABLE_NAME} AS sl
   , UNNEST(sl.event_params) AS ep
 where sl.event_name in ('page_view')
 and {% incrementcondition %} session_date {% endincrementcondition %}
