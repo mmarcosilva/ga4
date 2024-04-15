@@ -1,8 +1,8 @@
-project_name: "ga_four"
+project_name: "ga_four_beta"
 
 ## Connection Constants:
 constant: GA4_CONNECTION {
-  value: ""
+  value: "agregori-connection"
   export: override_required
 }
 

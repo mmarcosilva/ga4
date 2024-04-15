@@ -1,20 +1,21 @@
 include: "/views/event_data_dimensions/event_funnel.view"
 include: "/views/event_data_dimensions/page_funnel.view"
 include: "/views/sessions/*.view"
+include: "/views/bqml/*/*.view"
 
 view: sessions {
   derived_table: {
-    datagroup_trigger: ga4_default_datagroup
+    sql_trigger_value: ${device_geo.SQL_TABLE_NAME} ;;
     partition_keys: ["session_date"]
     cluster_keys: ["session_date"]
     increment_key: "session_date"
     increment_offset: 3
     sql:
 -- Final Select Statement:
-select se.session_date session_date
-    ,  se.ga_session_id ga_session_id
-    ,  se.ga_session_number ga_session_number
-    ,  se.user_pseudo_id user_pseudo_id
+select se.session_date as session_date
+    ,  se.ga_session_id as ga_session_id
+    ,  se.ga_session_number as ga_session_number
+    ,  se.user_pseudo_id as user_pseudo_id
     ,  se.sl_key
     -- packing session-level data into structs by category
     ,  (SELECT AS STRUCT coalesce(sa.medium,'(none)') medium -- sessions missing last-non-direct are direct
@@ -53,14 +54,14 @@ select se.session_date session_date
                       ,  d.geo__sub_continent
                       ,  d.geo__region) geo_data
     ,  se.event_data event_data
-from ${session_event_packing.SQL_TABLE_NAME} AS se
-left join ${session_tags.SQL_TABLE_NAME} sa
+from ${session_event_packing.SQL_TABLE_NAME} as se
+left join ${session_tags.SQL_TABLE_NAME} as sa
   on  se.sl_key = sa.sl_key
-left join ${session_facts.SQL_TABLE_NAME} sf
+left join ${session_facts.SQL_TABLE_NAME} as sf
   on  se.sl_key = sf.sl_key
-left join ${device_geo.SQL_TABLE_NAME} d
+left join ${device_geo.SQL_TABLE_NAME} as d
   on  se.sl_key = d.sl_key
-where {% incrementcondition %} session_date {% endincrementcondition %}
+where {% incrementcondition %} se.session_date {%  endincrementcondition %}
    ;;
   }
 
@@ -186,7 +187,7 @@ extends: [event_funnel, page_funnel]
   }
     dimension: session_data_session_event_count {
       type: number
-      sql: ${session_data}.session_event_count ;;
+      sql:${session_data}.session_event_count;;
       label: "Session Event Count"
     }
     dimension: session_data_engaged_events {
@@ -566,6 +567,12 @@ extends: [event_funnel, page_funnel]
     sql: ${user_pseudo_id} ;;
     value_format_name: formatted_number
   }
+  #measure: total_event_count {
+  #  type: sum
+  #  description: "Total times an event occured on a specific date"
+  #  sql: ${session_data_session_event_count} ;;
+  #  value_format_name: formatted_number
+  #}
 
   measure: total_new_users {
     view_label: "Audience"

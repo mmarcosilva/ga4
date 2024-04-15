@@ -1,12 +1,12 @@
-include: "/views/sessions/session_list_with_event_history.view.lkml"
+include: "/views/sessions/*.view.lkml"
 view: session_event_packing {
   derived_table:{
-    datagroup_trigger: ga4_default_datagroup
+    sql_trigger_value: ${session_facts.SQL_TABLE_NAME} ;;
     partition_keys: ["session_date"]
-    cluster_keys: ["session_date"]
+    cluster_keys: ["sl_key","user_pseudo_id","session_date"]
     increment_key: "session_date"
-    increment_offset: 10
-    sql: SELECT sl.session_date session_date
+    increment_offset: 0
+    sql:select sl.session_date session_date
       ,  sl.ga_session_id ga_session_id
       ,  sl.ga_session_number ga_session_number
       ,  sl.user_pseudo_id user_pseudo_id
@@ -39,17 +39,15 @@ view: session_event_packing {
                           , sl.event_dimensions
                           , sl.ecommerce
                           , sl.items)) event_data
-    FROM ${session_list_with_event_history.SQL_TABLE_NAME} AS sl
-    WHERE {% incrementcondition %} session_date {% endincrementcondition %} 
-    AND sl.sl_key IN (
-        SELECT sl_key FROM ${session_facts.SQL_TABLE_NAME} 
-        WHERE CASE WHEN "@{EVENT_COUNT}" = "" THEN 1=1 
-              ELSE session_event_count <SAFE_CAST("@{EVENT_COUNT}" AS INT64) END
-    ) 
-    GROUP BY 1,2,3,4,5;;
+    from ${session_list_w_event_hist.SQL_TABLE_NAME} AS sl
+    WHERE sl.sl_key IN (SELECT sl_key FROM ${session_facts.SQL_TABLE_NAME}
+    WHERE CASE WHEN "@{EVENT_COUNT}" = "" THEN 1=1 WHEN "@{EVENT_COUNT}" != "" THEN
+    session_event_count< SAFE_CAST("@{EVENT_COUNT}" AS INT64) END)
+    AND {% incrementcondition %} session_date {%  endincrementcondition %}
+  group by 1,2,3,4,5;;
   }
-dimension: session_date{
-  type: date
-  hidden: yes
-}
+  dimension: session_date{
+    type: date
+    hidden: yes
+  }
 }
