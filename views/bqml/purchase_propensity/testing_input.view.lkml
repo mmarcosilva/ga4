@@ -22,7 +22,7 @@ view: testing_input {
             THEN 1
             ELSE 0 END) AS label
         FROM
-          ${session_list_w_event_hist.SQL_TABLE_NAME} AS GA
+          ${session_list_with_event_history.SQL_TABLE_NAME} AS GA
         WHERE
           DATE(session_date) > DATE_SUB(CURRENT_DATE(), INTERVAL @{GA4_BQML_test_months} MONTH)
         GROUP BY
@@ -35,7 +35,7 @@ view: testing_input {
           MAX(geo.region) AS region,
           MAX(geo.country) AS country
         FROM
-          ${session_list_w_event_hist.SQL_TABLE_NAME} AS GA
+          ${session_list_with_event_history.SQL_TABLE_NAME} AS GA
         LEFT JOIN visitors_labeled AS Labels
           ON GA.user_pseudo_id = Labels.user_pseudo_id
         WHERE
@@ -58,7 +58,7 @@ view: testing_input {
             END)
           AS pages_viewed
         FROM
-          ${session_list_w_event_hist.SQL_TABLE_NAME} AS GA
+          ${session_list_with_event_history.SQL_TABLE_NAME} AS GA
         LEFT JOIN visitors_labeled AS Labels
           ON GA.user_pseudo_id = Labels.user_pseudo_id
         WHERE
@@ -100,7 +100,7 @@ view: testing_input {
           -- SUM(IF(event_name = 'my custom event', 1, 0)) AS cnt_my_custom_event
           -- Don't forget to add a comma after 'cnt_session_start' when adding a new field.
         FROM
-          ${session_list_w_event_hist.SQL_TABLE_NAME} AS GA
+          ${session_list_with_event_history.SQL_TABLE_NAME} AS GA
         LEFT JOIN visitors_labeled AS Labels
           ON GA.user_pseudo_id = Labels.user_pseudo_id
         WHERE
@@ -138,7 +138,7 @@ view: testing_input {
               WHERE key = 'engagement_time_msec'
             )) AS engagement_time_msec
           FROM
-            ${session_list_w_event_hist.SQL_TABLE_NAME} AS GA
+            ${session_list_with_event_history.SQL_TABLE_NAME} AS GA
           LEFT JOIN visitors_labeled AS Labels
             ON GA.user_pseudo_id = Labels.user_pseudo_id
           WHERE
@@ -187,7 +187,7 @@ view: testing_input {
           -- IFNULL(MAX(Event_counts.cnt_my_custom_event), 0) AS cnt_my_custom_event
           -- Don't forget to add a comma after 'cnt_session_start' when adding a new field.
         FROM
-          ${session_list_w_event_hist.SQL_TABLE_NAME} AS GA
+          ${session_list_with_event_history.SQL_TABLE_NAME} AS GA
         LEFT JOIN visitors_labeled AS Labels
           ON GA.user_pseudo_id = Labels.user_pseudo_id
         LEFT JOIN engagement AS Engagement
