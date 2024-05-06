@@ -26,7 +26,7 @@ view: device_geo{
       ,  sl.geo.metro geo__metro
       ,  sl.geo.sub_continent geo__sub_continent
       ,  sl.geo.region geo__region
-        from ${session_list_with_event_history.SQL_TABLE_NAME} AS sl
+        from ${session_list_w_event_hist.SQL_TABLE_NAME} AS sl
     where sl.event_name = 'session_start' ;;
   }
 }
