@@ -1,5 +1,6 @@
 include: "/views/*.view.lkml"
 include: "/views/*/*.view.lkml"
+include: "/views/*/*/*.view.lkml"
 include: "/attributes/*.lkml"
 
 explore: sessions {
@@ -104,12 +105,23 @@ explore: sessions {
     sql_on: ${sessions.session_attribution_medium} = ${others.medium};;
     relationship: many_to_one
   }
-
-
   join: attribution_sources {
     sql:  ;;
   relationship: one_to_one
     view_label: "Acquisition"
   }
+  join: forecasting {
+    type: full_outer
+    sql_on:${forecasting.forecast_timestamp}=${events.event_time_date} ;;#${events.event_name}=${forecasting.events_event_name} AND
+    relationship: one_to_one
+    view_label: "ARIMA"
+  }
+  #join: arima_join {
+  #  type: inner
+  #  sql_on: ${forecasting.forecast_timestamp}=${arima_join.date_join} OR
+  #  ${sessions.session_date}=${arima_join.date_join};;
+  #  relationship: many_to_one
+  #  view_label: "ARIMA"
+  #}
 
 }
