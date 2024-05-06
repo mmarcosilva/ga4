@@ -1,11 +1,12 @@
-- dashboard: propensity_model
-  title: "[GA4] Propensity Model"
+---
+- dashboard: arima
+  title: "[GA4] ARIMA Model"
   layout: newspaper
   preferred_viewer: dashboards-next
   description: ''
-  preferred_slug: 0CHozsw7cHwlmrT9MKujag
+  preferred_slug: Earwwr3dvZ4OQPQZzyBlDn
   elements:
-  - name: " (3)"
+  - name: " box"
     type: text
     title_text: ''
     subtitle_text: ''
@@ -50,6 +51,7 @@
     col: 0
     width: 24
     height: 4
+
   - name: " (4)"
     type: text
     title_text: ''
@@ -78,56 +80,198 @@
     col: 0
     width: 20
     height: 2
-  - type: button
-    name: button_984
-    rich_content_json: '{"text":"Go to top","description":"This button is for redirecting
-      back to the top of the page","newTab":false,"alignment":"center","size":"medium","style":"FILLED","color":"#1A73E8","href":"#top"}'
-    row: 37
+
+
+
+
+  - name: ARIMA Model
+    title: ARIMA Model
+    merged_queries:
+    - model: ga4
+      explore: sessions
+      type: looker_line
+      fields: [forecasting.forecast_timestamp, forecasting.prediction_interval_lower_bound,
+        forecasting.forecast_value, forecasting.prediction_interval_upper_bound]
+      fill_fields: [forecasting.forecast_timestamp]
+      filters:
+        forecasting.events_event_name: ''
+      sorts: [forecasting.forecast_timestamp desc]
+      limit: 500
+      column_limit: 50
+      x_axis_gridlines: false
+      y_axis_gridlines: true
+      show_view_names: false
+      show_y_axis_labels: true
+      show_y_axis_ticks: true
+      y_axis_tick_density: default
+      y_axis_tick_density_custom: 5
+      show_x_axis_label: true
+      show_x_axis_ticks: true
+      y_axis_scale_mode: linear
+      x_axis_reversed: false
+      y_axis_reversed: false
+      plot_size_by_field: false
+      trellis: ''
+      stacking: ''
+      limit_displayed_rows: false
+      legend_position: center
+      point_style: none
+      show_value_labels: false
+      label_density: 25
+      x_axis_scale: auto
+      y_axis_combined: true
+      show_null_points: true
+      interpolation: linear
+      hidden_pivots: {}
+      show_row_numbers: true
+      transpose: false
+      truncate_text: true
+      hide_totals: false
+      hide_row_totals: false
+      size_to_fit: true
+      table_theme: white
+      enable_conditional_formatting: false
+      header_text_alignment: left
+      header_font_size: 12
+      rows_font_size: 12
+      conditional_formatting_include_totals: false
+      conditional_formatting_include_nulls: false
+      defaults_version: 1
+      join_fields: []
+    - model: ga4
+      explore: sessions
+      type: looker_line
+      fields: [sum_of_session_event_count, events.event_time_date, sessions.total_sessions]
+      fill_fields: [events.event_time_date]
+      filters:
+        events.event_name: ''
+      sorts: [events.event_time_date desc]
+      limit: 500
+      column_limit: 50
+      dynamic_fields:
+      - measure: sum_of_session_event_count
+        based_on: sessions.session_data_session_event_count
+        expression: ''
+        label: Sum of Session Event Count
+        type: sum
+        _kind_hint: measure
+        _type_hint: number
+      x_axis_gridlines: false
+      y_axis_gridlines: true
+      show_view_names: false
+      show_y_axis_labels: true
+      show_y_axis_ticks: true
+      y_axis_tick_density: default
+      y_axis_tick_density_custom: 5
+      show_x_axis_label: true
+      show_x_axis_ticks: true
+      y_axis_scale_mode: linear
+      x_axis_reversed: false
+      y_axis_reversed: false
+      plot_size_by_field: false
+      trellis: ''
+      stacking: ''
+      limit_displayed_rows: false
+      legend_position: center
+      point_style: none
+      show_value_labels: false
+      label_density: 25
+      x_axis_scale: auto
+      y_axis_combined: true
+      show_null_points: true
+      interpolation: linear
+      x_axis_zoom: true
+      y_axis_zoom: true
+      swap_axes: false
+      hidden_pivots: {}
+      show_row_numbers: true
+      transpose: false
+      truncate_text: true
+      hide_totals: false
+      hide_row_totals: false
+      size_to_fit: true
+      table_theme: white
+      enable_conditional_formatting: false
+      header_text_alignment: left
+      header_font_size: 12
+      rows_font_size: 12
+      conditional_formatting_include_totals: false
+      conditional_formatting_include_nulls: false
+      defaults_version: 1
+      hidden_fields: [sum_of_session_event_count]
+      join_fields:
+      - field_name: events.event_time_date
+        source_field_name: forecasting.forecast_timestamp
+    x_axis_gridlines: false
+    y_axis_gridlines: true
+    show_view_names: false
+    y_axes: [{label: '', orientation: left, series: [{axisId: sessions.total_sessions,
+            id: sessions.total_sessions, name: Sessions}, {axisId: forecasting.prediction_interval_lower_bound,
+            id: forecasting.prediction_interval_lower_bound, name: Prediction Interval
+              Lower Bound}, {axisId: forecasting.forecast_value, id: forecasting.forecast_value,
+            name: Forecast Value}, {axisId: forecasting.prediction_interval_upper_bound,
+            id: forecasting.prediction_interval_upper_bound, name: Prediction Interval
+              Upper Bound}], showLabels: true, showValues: true, maxValue: 200, unpinAxis: false,
+        tickDensity: default, type: linear}]
+    show_y_axis_labels: true
+    show_y_axis_ticks: true
+    y_axis_tick_density: default
+    y_axis_tick_density_custom: 5
+    show_x_axis_label: true
+    show_x_axis_ticks: true
+    y_axis_scale_mode: linear
+    x_axis_reversed: false
+    y_axis_reversed: false
+    plot_size_by_field: false
+    x_axis_zoom: true
+    y_axis_zoom: true
+    trellis: ''
+    stacking: ''
+    limit_displayed_rows: false
+    legend_position: center
+    series_types:
+      forecasting.prediction_interval_upper_bound: area
+      forecasting.prediction_interval_lower_bound: area
+    point_style: none
+    series_colors:
+      forecasting.forecast_value: "#1A73E8"
+    show_value_labels: false
+    label_density: 25
+    x_axis_scale: auto
+    y_axis_combined: true
+    show_null_points: false
+    interpolation: linear
+    type: looker_line
+    hidden_fields: [sum_of_session_event_count, forecasting.forecast_value, sessions.total_sessions]
+    dynamic_fields:
+    - category: table_calculation
+      expression: case(when(is_null(${sessions.total_sessions}),${forecasting.forecast_value}),${sessions.total_sessions})
+      label: Real value and forecasted value
+      value_format:
+      value_format_name:
+      _kind_hint: measure
+      table_calculation: real_value_and_forecasted_value
+      _type_hint: number
+    listen:
+    - Event Name: forecasting.events_event_name
+    - Event Name: events.event_name
+    row: 6
     col: 0
     width: 24
-    height: 1
-  - name: ''
-    type: text
-    title_text: ''
-    subtitle_text: ''
-    body_text: '[{"type":"h1","children":[{"text":"Prediction Statistics"}],"align":"center"}]'
-    rich_content_json: '{"format":"slate"}'
-    row: 0
-    col: 0
-    width: 22
-    height: 2
-  - title: Prediction Split by Revenue (USD)
-    name: Prediction Split by Revenue (USD)
+    height: 8
+  - title: Model Evaluation
+    name: Model Evaluation
     model: ga4
-    explore: sessions
+    explore: model_evaluation
     type: looker_grid
-    fields: [future_purchase_prediction.pred_probability_bucket, purchase_average_usd,
-      events.total_purchase_revenue_usd, future_purchase_prediction.count]
-    fill_fields: [future_purchase_prediction.pred_probability_bucket]
-    filters:
-      future_purchase_prediction.user_pseudo_id: NOT NULL
-    sorts: [future_purchase_prediction.pred_probability_bucket desc]
+    fields: [model_evaluation.events_event_name, model_evaluation.AIC, model_evaluation.log_likelihood,
+      model_evaluation.non_seasonal_p, model_evaluation.non_seasonal_d, model_evaluation.non_seasonal_q,
+      model_evaluation.has_drift]
+    sorts: [model_evaluation.events_event_name]
     limit: 500
     column_limit: 50
-    dynamic_fields:
-    - measure: sum_of_ecommerce_purchase_revenue_in_usd
-      based_on: events.ecommerce__purchase_revenue_in_usd
-      expression: ''
-      label: Sum of Ecommerce Purchase Revenue In USD
-      type: sum
-      _kind_hint: measure
-      _type_hint: number
-    - category: measure
-      expression: ''
-      label: Purchase Average (USD)
-      based_on: events.ecommerce__purchase_revenue_in_usd
-      _kind_hint: measure
-      measure: purchase_average_usd
-      type: average
-      _type_hint: number
-    query_timezone: America/Ciudad_Juarez
     show_view_names: false
-    show_row_numbers: true
+    show_row_numbers: false
     transpose: false
     truncate_text: true
     hide_totals: false
@@ -146,69 +290,20 @@
     show_row_totals: true
     truncate_header: false
     minimum_column_width: 75
-    series_labels:
-      future_purchase_prediction.pred_probability_bucket: Probability Bucket
-    series_cell_visualizations:
-      purchase_average_usd:
-        is_active: true
-        palette:
-          palette_id: 6a5ea9e4-0c4e-7ef3-7e2d-e03007a150eb
-          collection_id: test
-          custom_colors:
-          - "#F9AB00"
-          - "#B31412"
-          - "#1A73E8"
-      events.total_purchase_revenue_usd:
-        is_active: false
-        palette:
-          palette_id: d93e9311-ec5a-f320-de6e-a1d6d68ecfc9
-          collection_id: test
-          custom_colors:
-          - "#F9AB00"
-          - "#1A73E8"
-          - "#B31412"
-    hidden_pivots: {}
-    x_axis_gridlines: false
-    y_axis_gridlines: true
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_label: true
-    show_x_axis_ticks: true
-    y_axis_scale_mode: linear
-    x_axis_reversed: false
-    y_axis_reversed: false
-    plot_size_by_field: false
-    trellis: ''
-    stacking: ''
-    legend_position: center
-    point_style: none
-    show_value_labels: false
-    label_density: 25
-    x_axis_scale: auto
-    y_axis_combined: true
-    ordering: none
-    show_null_labels: false
-    show_totals_labels: false
-    show_silhouette: false
-    totals_color: "#808080"
     defaults_version: 1
     listen:
-      Session Date: sessions.session_date
-    row: 4
+      Event Name: model_evaluation.events_event_name
+    row: 17
     col: 0
-    width: 22
-    height: 4
-  - title: Low Prob user_ids
-    name: Low Prob user_ids
+    width: 24
+    height: 3
+  - title: AR
+    name: AR
     model: ga4
-    explore: sessions
+    explore: model_evaluation
     type: single_value
-    fields: [future_purchase_prediction.count]
-    filters:
-      future_purchase_prediction.pred_probability_bucket: "< 0.1,>= 0.1 and < 0.2,>= 0.2 and < 0.3"
-      events.total_purchase_revenue_usd: NOT NULL
+    fields: [model_evaluation.non_seasonal_p]
+    sorts: [model_evaluation.non_seasonal_p]
     limit: 500
     column_limit: 50
     custom_color_enabled: true
@@ -220,225 +315,249 @@
     enable_conditional_formatting: true
     conditional_formatting_include_totals: false
     conditional_formatting_include_nulls: false
-    single_value_title: 2nd Decile
-    conditional_formatting: [{type: not null, value: !!null '', background_color: "#B31412",
-        font_color: !!null '', color_application: {collection_id: test, palette_id: test-sequential-0},
-        bold: false, italic: false, strikethrough: false, fields: !!null ''}]
-    defaults_version: 1
-    hidden_pivots: {}
-    listen:
-      Session Date: sessions.session_date
-    row: 2
-    col: 15
-    width: 7
-    height: 2
-  - title: Medium Prob cust_ids
-    name: Medium Prob cust_ids
-    model: ga4
-    explore: sessions
-    type: single_value
-    fields: [future_purchase_prediction.count]
-    filters:
-      future_purchase_prediction.pred_probability_bucket: ">= 0.3 and < 0.4,>= 0.4 and < 0.5,>= 0.5 and < 0.6,>= 0.6 and < 0.7"
-      events.total_purchase_revenue_usd: NOT NULL
-    limit: 500
-    column_limit: 50
-    custom_color_enabled: true
-    show_single_value_title: true
-    show_comparison: false
-    comparison_type: value
-    comparison_reverse_colors: false
-    show_comparison_label: true
-    enable_conditional_formatting: true
-    conditional_formatting_include_totals: false
-    conditional_formatting_include_nulls: false
-    single_value_title: 5th Decile
-    conditional_formatting: [{type: not null, value: !!null '', background_color: "#1A73E8",
-        font_color: !!null '', color_application: {collection_id: test, palette_id: test-sequential-0},
-        bold: false, italic: false, strikethrough: false, fields: !!null ''}]
-    defaults_version: 1
-    hidden_pivots: {}
-    listen:
-      Session Date: sessions.session_date
-    row: 2
-    col: 8
-    width: 7
-    height: 2
-  - title: High Prob cust_ids
-    name: High Prob cust_ids
-    model: ga4
-    explore: sessions
-    type: single_value
-    fields: [future_purchase_prediction.count]
-    filters:
-      future_purchase_prediction.pred_probability_bucket: ">= 0.7 and < 0.8,>= 0.8 and < 0.9,>= 0.9"
-      events.total_purchase_revenue_usd: NOT NULL
-    limit: 500
-    column_limit: 50
-    custom_color_enabled: true
-    show_single_value_title: true
-    show_comparison: false
-    comparison_type: value
-    comparison_reverse_colors: false
-    show_comparison_label: true
-    enable_conditional_formatting: true
-    conditional_formatting_include_totals: false
-    conditional_formatting_include_nulls: false
-    custom_color: "#fcf9ff"
-    single_value_title: 7th Decile
-    conditional_formatting: [{type: not null, value: !!null '', background_color: "#F9AB00",
-        font_color: "#ffff", color_application: {collection_id: test, palette_id: test-sequential-0},
-        bold: false, italic: false, strikethrough: false, fields: !!null ''}]
+    single_value_title: AR Steps
+    conditional_formatting: [{type: not null, value: !!null '', background_color: "#E8710A",
+        font_color: "#ffff", color_application: {collection_id: 7c56cc21-66e4-41c9-81ce-a60e1c3967b2,
+          palette_id: 56d0c358-10a0-4fd6-aa0b-b117bef527ab}, bold: false, italic: false,
+        strikethrough: false, fields: !!null ''}]
+    show_view_names: false
+    show_row_numbers: true
+    transpose: false
+    truncate_text: true
+    hide_totals: false
+    hide_row_totals: false
+    size_to_fit: true
+    table_theme: white
+    limit_displayed_rows: false
+    header_text_alignment: left
+    header_font_size: 12
+    rows_font_size: 12
     defaults_version: 1
     listen:
-      Session Date: sessions.session_date
-    row: 2
+      Event Name: model_evaluation.events_event_name
+    row: 20
     col: 0
     width: 8
-    height: 2
-  - title: Rolling 90 day Person Count by Predicted Bucket Across Weeks
-    name: Rolling 90 day Person Count by Predicted Bucket Across Weeks
+    height: 4
+  - title: Integrated
+    name: Integrated
     model: ga4
-    explore: incremental_prediction
-    type: looker_line
-    fields: [incremental_prediction.week, incremental_prediction.pred_probability_bucket,
-      incremental_prediction.count]
-    pivots: [incremental_prediction.pred_probability_bucket]
-    sorts: [incremental_prediction.pred_probability_bucket, incremental_prediction.week,
-      incremental_prediction.count desc 0]
+    explore: model_evaluation
+    type: single_value
+    fields: [model_evaluation.non_seasonal_d]
+    filters: {}
+    sorts: [model_evaluation.non_seasonal_d]
     limit: 500
     column_limit: 50
-    query_timezone: America/Ciudad_Juarez
-    x_axis_gridlines: false
-    y_axis_gridlines: true
+    custom_color_enabled: true
+    show_single_value_title: true
+    show_comparison: false
+    comparison_type: value
+    comparison_reverse_colors: false
+    show_comparison_label: true
+    enable_conditional_formatting: true
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    single_value_title: Integrated value
+    conditional_formatting: [{type: not null, value: !!null '', background_color: "#12B5CB",
+        font_color: "#ffff", color_application: {collection_id: 7c56cc21-66e4-41c9-81ce-a60e1c3967b2,
+          palette_id: 56d0c358-10a0-4fd6-aa0b-b117bef527ab}, bold: false, italic: false,
+        strikethrough: false, fields: !!null ''}]
     show_view_names: false
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_label: false
-    show_x_axis_ticks: true
-    y_axis_scale_mode: linear
-    x_axis_reversed: false
-    y_axis_reversed: false
-    plot_size_by_field: false
-    trellis: ''
-    stacking: ''
+    show_row_numbers: true
+    transpose: false
+    truncate_text: true
+    hide_totals: false
+    hide_row_totals: false
+    size_to_fit: true
+    table_theme: white
     limit_displayed_rows: false
-    legend_position: center
-    point_style: none
-    show_value_labels: false
-    label_density: 25
-    x_axis_scale: auto
-    y_axis_combined: true
-    show_null_points: true
-    interpolation: linear
-    color_application:
-      collection_id: b43731d5-dc87-4a8e-b807-635bef3948e7
-      palette_id: fb7bb53e-b77b-4ab6-8274-9d420d3d73f3
-      options:
-        steps: 5
-    y_axes: [{label: Person Count, orientation: left, series: [{axisId: incremental_prediction.count,
-            id: High - incremental_prediction.count, name: High}, {axisId: incremental_prediction.count,
-            id: Low - incremental_prediction.count, name: Low}, {axisId: incremental_prediction.count,
-            id: Medium - incremental_prediction.count, name: Medium}], showLabels: true,
-        showValues: true, unpinAxis: false, tickDensity: default, tickDensityCustom: 5,
-        type: linear}]
-    x_axis_zoom: true
-    y_axis_zoom: true
-    hide_legend: false
-    swap_axes: false
-    ordering: none
-    show_null_labels: false
-    show_totals_labels: false
-    show_silhouette: false
-    totals_color: "#808080"
+    header_text_alignment: left
+    header_font_size: 12
+    rows_font_size: 12
     defaults_version: 1
-    hidden_fields: []
-    hidden_points_if_no: []
-    hidden_pivots: {}
-    listen: {}
-    row: 8
+    listen:
+      Event Name: model_evaluation.events_event_name
+    row: 20
+    col: 8
+    width: 8
+    height: 4
+  - title: Moving Averages
+    name: Moving Averages
+    model: ga4
+    explore: model_evaluation
+    type: single_value
+    fields: [model_evaluation.non_seasonal_q]
+    filters: {}
+    sorts: [model_evaluation.non_seasonal_q]
+    limit: 500
+    column_limit: 50
+    custom_color_enabled: true
+    show_single_value_title: true
+    show_comparison: false
+    comparison_type: value
+    comparison_reverse_colors: false
+    show_comparison_label: true
+    enable_conditional_formatting: true
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    single_value_title: Moving Averages
+    conditional_formatting: [{type: not null, value: !!null '', background_color: "#A8A116",
+        font_color: "#fff", color_application: {collection_id: 7c56cc21-66e4-41c9-81ce-a60e1c3967b2,
+          palette_id: 56d0c358-10a0-4fd6-aa0b-b117bef527ab}, bold: false, italic: false,
+        strikethrough: false, fields: !!null ''}]
+    show_view_names: false
+    show_row_numbers: true
+    transpose: false
+    truncate_text: true
+    hide_totals: false
+    hide_row_totals: false
+    size_to_fit: true
+    table_theme: white
+    limit_displayed_rows: false
+    header_text_alignment: left
+    header_font_size: 12
+    rows_font_size: 12
+    defaults_version: 1
+    listen:
+      Event Name: model_evaluation.events_event_name
+    row: 20
+    col: 16
+    width: 8
+    height: 4
+  - title: Lower Bound
+    name: Lower Bound
+    model: ga4
+    explore: sessions
+    type: single_value
+    fields: [forecasting.forecast_timestamp, forecasting.forecast_value, forecasting.prediction_interval_lower_bound,
+      forecasting.prediction_interval_upper_bound]
+    fill_fields: [forecasting.forecast_timestamp]
+    filters: {}
+    sorts: [forecasting.forecast_timestamp desc]
+    limit: 1
+    column_limit: 50
+    filter_expression: "${forecasting.forecast_timestamp}<=add_days(1,now())"
+    custom_color_enabled: true
+    show_single_value_title: true
+    show_comparison: false
+    comparison_type: value
+    comparison_reverse_colors: false
+    show_comparison_label: true
+    enable_conditional_formatting: true
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    single_value_title: Lower Bound
+    value_format: '0.00'
+    conditional_formatting: [{type: not null, value: !!null '', background_color: "#F9AB00",
+        font_color: "#ffffff", color_application: {collection_id: 7c56cc21-66e4-41c9-81ce-a60e1c3967b2,
+          palette_id: 56d0c358-10a0-4fd6-aa0b-b117bef527ab}, bold: false, italic: false,
+        strikethrough: false, fields: !!null ''}]
+    show_view_names: false
+    defaults_version: 1
+    hidden_fields: [forecasting.forecast_value]
+    listen:
+      Event Name: forecasting.events_event_name
+    row: 0
     col: 0
-    width: 22
+    width: 8
     height: 6
-  - title: Rolling 90 day Revenue (USD) by Predicted Bucket Across Weeks
-    name: Rolling 90 day Revenue (USD) by Predicted Bucket Across Weeks
-    model: ga4
-    explore: incremental_prediction
-    type: looker_line
-    fields: [incremental_prediction.week, incremental_prediction.pred_probability_bucket,
-      incremental_prediction.total_purchase_revenue_usd]
-    pivots: [incremental_prediction.pred_probability_bucket]
-    sorts: [incremental_prediction.pred_probability_bucket, incremental_prediction.week]
-    limit: 500
-    column_limit: 50
-    query_timezone: America/Ciudad_Juarez
-    x_axis_gridlines: false
-    y_axis_gridlines: true
-    show_view_names: false
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_label: false
-    show_x_axis_ticks: true
-    y_axis_scale_mode: linear
-    x_axis_reversed: false
-    y_axis_reversed: false
-    plot_size_by_field: false
-    trellis: ''
-    stacking: ''
-    limit_displayed_rows: false
-    legend_position: center
-    point_style: none
-    show_value_labels: false
-    label_density: 25
-    x_axis_scale: auto
-    y_axis_combined: true
-    show_null_points: true
-    interpolation: linear
-    color_application:
-      collection_id: b43731d5-dc87-4a8e-b807-635bef3948e7
-      palette_id: fb7bb53e-b77b-4ab6-8274-9d420d3d73f3
-      options:
-        steps: 5
-    y_axes: [{label: Revenue (USD), orientation: left, series: [{axisId: incremental_prediction.count,
-            id: High - incremental_prediction.count, name: High}, {axisId: incremental_prediction.count,
-            id: Low - incremental_prediction.count, name: Low}, {axisId: incremental_prediction.count,
-            id: Medium - incremental_prediction.count, name: Medium}], showLabels: true,
-        showValues: true, unpinAxis: false, tickDensity: default, tickDensityCustom: 5,
-        type: linear}]
-    x_axis_zoom: true
-    y_axis_zoom: true
-    hide_legend: false
-    swap_axes: false
-    ordering: none
-    show_null_labels: false
-    show_totals_labels: false
-    show_silhouette: false
-    totals_color: "#808080"
-    defaults_version: 1
-    hidden_fields: []
-    hidden_points_if_no: []
-    hidden_pivots: {}
-    listen: {}
+  - name: ''
+    type: text
+    title_text: ''
+    subtitle_text: ''
+    body_text: |
+      ***
+
+      # Model Evaluation
     row: 14
     col: 0
-    width: 22
+    width: 24
+    height: 3
+  - title: Users Expected Tomorrow (Copy)
+    name: Users Expected Tomorrow (Copy)
+    model: ga4
+    explore: sessions
+    type: single_value
+    fields: [forecasting.forecast_timestamp, forecasting.forecast_value, forecasting.prediction_interval_lower_bound,
+      forecasting.prediction_interval_upper_bound]
+    fill_fields: [forecasting.forecast_timestamp]
+    filters: {}
+    sorts: [forecasting.forecast_timestamp desc]
+    limit: 1
+    column_limit: 50
+    filter_expression: "${forecasting.forecast_timestamp}<=add_days(1,now())"
+    custom_color_enabled: true
+    show_single_value_title: true
+    show_comparison: false
+    comparison_type: value
+    comparison_reverse_colors: false
+    show_comparison_label: true
+    enable_conditional_formatting: true
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    single_value_title: Users Expected Tomorrow
+    value_format: '0.00'
+    conditional_formatting: [{type: not null, value: !!null '', background_color: "#1A73E8",
+        font_color: !!null '', color_application: {collection_id: 7c56cc21-66e4-41c9-81ce-a60e1c3967b2,
+          palette_id: 56d0c358-10a0-4fd6-aa0b-b117bef527ab}, bold: false, italic: false,
+        strikethrough: false, fields: !!null ''}]
+    show_view_names: false
+    defaults_version: 1
+    listen:
+      Event Name: forecasting.events_event_name
+    row: 0
+    col: 8
+    width: 8
+    height: 6
+  - title: Upper Bound
+    name: Upper Bound
+    model: ga4
+    explore: sessions
+    type: single_value
+    fields: [forecasting.forecast_timestamp, forecasting.forecast_value, forecasting.prediction_interval_lower_bound,
+      forecasting.prediction_interval_upper_bound]
+    fill_fields: [forecasting.forecast_timestamp]
+    filters: {}
+    sorts: [forecasting.forecast_timestamp desc]
+    limit: 1
+    column_limit: 50
+    filter_expression: "${forecasting.forecast_timestamp}<=add_days(1,now())"
+    custom_color_enabled: true
+    show_single_value_title: true
+    show_comparison: false
+    comparison_type: value
+    comparison_reverse_colors: false
+    show_comparison_label: true
+    enable_conditional_formatting: true
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    single_value_title: Upper Bound
+    value_format: '0.00'
+    conditional_formatting: [{type: not null, value: !!null '', background_color: "#EA4335",
+        font_color: "#ffffff", color_application: {collection_id: 7c56cc21-66e4-41c9-81ce-a60e1c3967b2,
+          palette_id: 56d0c358-10a0-4fd6-aa0b-b117bef527ab}, bold: false, italic: false,
+        strikethrough: false, fields: !!null ''}]
+    show_view_names: false
+    defaults_version: 1
+    hidden_fields: [forecasting.forecast_value, forecasting.prediction_interval_lower_bound]
+    listen:
+      Event Name: forecasting.events_event_name
+    row: 0
+    col: 16
+    width: 8
     height: 6
   filters:
-  - name: Session Date
-    title: Session Date
+  - name: Event Name
+    title: Event Name
     type: field_filter
-    default_value: 90 day
+    default_value: ''
     allow_multiple_values: true
-    required: true
+    required: false
     ui_config:
-      type: relative_timeframes
-      display: inline
-      options: []
+      type: tag_list
+      display: popover
     model: ga4
     explore: sessions
     listens_to_filters: []
-    field: sessions.session_date
+    field: events.event_name

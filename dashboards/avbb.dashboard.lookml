@@ -1,11 +1,13 @@
-- dashboard: propensity_model
-  title: "[GA4] Propensity Model"
+---
+- dashboard: avbb
+  title: "[GA4] AVBB Model"
   layout: newspaper
   preferred_viewer: dashboards-next
   description: ''
-  preferred_slug: 0CHozsw7cHwlmrT9MKujag
+  preferred_slug: g2ZthRxhtAWMiEf9V19Hzs
   elements:
-  - name: " (3)"
+
+  - name: " box"
     type: text
     title_text: ''
     subtitle_text: ''
@@ -45,11 +47,12 @@
     \ href=\"/dashboards-next/ga4::propensity_model\">\n<svg  style=\"height: 16px; fill: #4285F4;\" class=\"\
     svg-icon\" viewBox=\"0 0 20 20\">\n<path d=\"M15.94,10.179l-2.437-0.325l1.62-7.379c0.047-0.235-0.132-0.458-0.372-0.458H5.25c-0.241,0-0.42,0.223-0.373,0.458l1.634,7.376L4.06,10.179c-0.312,0.041-0.446,0.425-0.214,0.649l2.864,2.759l-0.724,3.947c-0.058,0.315,0.277,0.554,0.559,0.401l3.457-1.916l3.456,1.916c-0.419-0.238,0.56,0.439,0.56-0.401l-0.725-3.947l2.863-2.759C16.388,10.604,16.254,10.22,15.94,10.179M10.381,2.778h3.902l-1.536,6.977L12.036,9.66l-1.655-3.546V2.778z\
     \ M5.717,2.778h3.903v3.335L7.965,9.66L7.268,9.753L5.717,2.778zM12.618,13.182c-0.092,0.088-0.134,0.217-0.11,0.343l0.615,3.356l-2.938-1.629c-0.057-0.03-0.122-0.048-0.184-0.048c-0.063,0-0.128,0.018-0.185,0.048l-2.938,1.629l0.616-3.356c0.022-0.126-0.019-0.255-0.11-0.343l-2.441-2.354l3.329-0.441c0.128-0.017,0.24-0.099,0.295-0.215l1.435-3.073l1.435,3.073c0.055,0.116,0.167,0.198,0.294,0.215l3.329,0.441L12.618,13.182z\"\
-    ></path>\n</svg>\nModels</a>\n</nav>\n</div>"
+    ></path>\n</svg>\nPropensity Model</a>\n</nav>\n</div>"
     row: 0
     col: 0
     width: 24
     height: 4
+
   - name: " (4)"
     type: text
     title_text: ''
@@ -78,54 +81,84 @@
     col: 0
     width: 20
     height: 2
-  - type: button
-    name: button_984
-    rich_content_json: '{"text":"Go to top","description":"This button is for redirecting
-      back to the top of the page","newTab":false,"alignment":"center","size":"medium","style":"FILLED","color":"#1A73E8","href":"#top"}'
-    row: 37
+
+
+
+
+
+  - title: Feature Attribution for Revenue
+    name: Feature Attribution for Revenue
+    model: ga4
+    explore: model_explanation
+    type: looker_bar
+    fields: [model_explanation.attribution, model_explanation.feature]
+    sorts: [model_explanation.attribution desc]
+    limit: 500
+    column_limit: 50
+    x_axis_gridlines: false
+    y_axis_gridlines: true
+    show_view_names: false
+    show_y_axis_labels: true
+    show_y_axis_ticks: true
+    y_axis_tick_density: default
+    y_axis_tick_density_custom: 5
+    show_x_axis_label: true
+    show_x_axis_ticks: true
+    y_axis_scale_mode: linear
+    x_axis_reversed: false
+    y_axis_reversed: false
+    plot_size_by_field: false
+    trellis: ''
+    stacking: ''
+    limit_displayed_rows: false
+    legend_position: center
+    point_style: none
+    show_value_labels: true
+    label_density: 25
+    x_axis_scale: auto
+    y_axis_combined: true
+    ordering: none
+    show_null_labels: false
+    show_totals_labels: false
+    show_silhouette: false
+    totals_color: "#808080"
+    x_axis_zoom: true
+    y_axis_zoom: true
+    label_value_format: '0.000'
+    advanced_vis_config: |-
+      {
+        chart: {},
+        series: [{
+          name: 'Feature'
+        }]
+      }
+    defaults_version: 1
+    listen: {}
+    row: 2
     col: 0
     width: 24
-    height: 1
-  - name: ''
-    type: text
-    title_text: ''
-    subtitle_text: ''
-    body_text: '[{"type":"h1","children":[{"text":"Prediction Statistics"}],"align":"center"}]'
-    rich_content_json: '{"format":"slate"}'
-    row: 0
-    col: 0
-    width: 22
-    height: 2
-  - title: Prediction Split by Revenue (USD)
-    name: Prediction Split by Revenue (USD)
+    height: 8
+  - title: Category Attribution for Revenue
+    name: Category Attribution for Revenue
     model: ga4
-    explore: sessions
+    explore: category_attribution
     type: looker_grid
-    fields: [future_purchase_prediction.pred_probability_bucket, purchase_average_usd,
-      events.total_purchase_revenue_usd, future_purchase_prediction.count]
-    fill_fields: [future_purchase_prediction.pred_probability_bucket]
+    fields: [category_attribution.processed_input, category_attribution.category,
+      category_attribution.weight, category_attribution.standard_error, category_attribution.p_value]
     filters:
-      future_purchase_prediction.user_pseudo_id: NOT NULL
-    sorts: [future_purchase_prediction.pred_probability_bucket desc]
+      category_attribution.category: "-NULL"
+    sorts: [weight_order desc]
     limit: 500
     column_limit: 50
     dynamic_fields:
-    - measure: sum_of_ecommerce_purchase_revenue_in_usd
-      based_on: events.ecommerce__purchase_revenue_in_usd
-      expression: ''
-      label: Sum of Ecommerce Purchase Revenue In USD
-      type: sum
-      _kind_hint: measure
+    - category: table_calculation
+      expression: abs(${category_attribution.weight})
+      label: Weight order
+      value_format:
+      value_format_name:
+      _kind_hint: dimension
+      table_calculation: weight_order
       _type_hint: number
-    - category: measure
-      expression: ''
-      label: Purchase Average (USD)
-      based_on: events.ecommerce__purchase_revenue_in_usd
-      _kind_hint: measure
-      measure: purchase_average_usd
-      type: average
-      _type_hint: number
-    query_timezone: America/Ciudad_Juarez
     show_view_names: false
     show_row_numbers: true
     transpose: false
@@ -146,28 +179,16 @@
     show_row_totals: true
     truncate_header: false
     minimum_column_width: 75
-    series_labels:
-      future_purchase_prediction.pred_probability_bucket: Probability Bucket
     series_cell_visualizations:
-      purchase_average_usd:
-        is_active: true
-        palette:
-          palette_id: 6a5ea9e4-0c4e-7ef3-7e2d-e03007a150eb
-          collection_id: test
-          custom_colors:
-          - "#F9AB00"
-          - "#B31412"
-          - "#1A73E8"
-      events.total_purchase_revenue_usd:
+      category_attribution.p_value:
         is_active: false
-        palette:
-          palette_id: d93e9311-ec5a-f320-de6e-a1d6d68ecfc9
-          collection_id: test
-          custom_colors:
-          - "#F9AB00"
-          - "#1A73E8"
-          - "#B31412"
-    hidden_pivots: {}
+      category_attribution.weight:
+        is_active: false
+        value_display: true
+    series_value_format:
+      category_attribution.weight: '0.000'
+      category_attribution.p_value: '0.0000'
+      category_attribution.standard_error: '0.0000'
     x_axis_gridlines: false
     y_axis_gridlines: true
     show_y_axis_labels: true
@@ -194,53 +215,136 @@
     show_silhouette: false
     totals_color: "#808080"
     defaults_version: 1
+    hidden_fields: [weight_order]
     listen:
-      Session Date: sessions.session_date
-    row: 4
+      Processed Input: category_attribution.processed_input
+    row: 19
     col: 0
-    width: 22
-    height: 4
-  - title: Low Prob user_ids
-    name: Low Prob user_ids
+    width: 24
+    height: 7
+  - title: Top Variables
+    name: Top Variables
     model: ga4
-    explore: sessions
-    type: single_value
-    fields: [future_purchase_prediction.count]
+    explore: category_attribution
+    type: looker_column
+    fields: [category_attribution.processed_input, category_attribution.weight, category_attribution.category,
+      category_attribution.standard_error, category_attribution.p_value]
     filters:
-      future_purchase_prediction.pred_probability_bucket: "< 0.1,>= 0.1 and < 0.2,>= 0.2 and < 0.3"
-      events.total_purchase_revenue_usd: NOT NULL
+      category_attribution.category: "-NULL"
+    sorts: [weight_order desc]
     limit: 500
     column_limit: 50
-    custom_color_enabled: true
-    show_single_value_title: true
-    show_comparison: false
-    comparison_type: value
-    comparison_reverse_colors: false
-    show_comparison_label: true
-    enable_conditional_formatting: true
+    dynamic_fields:
+    - category: table_calculation
+      expression: abs(${category_attribution.weight})
+      label: Weight order
+      value_format:
+      value_format_name:
+      _kind_hint: dimension
+      table_calculation: weight_order
+      _type_hint: number
+    x_axis_gridlines: false
+    y_axis_gridlines: true
+    show_view_names: false
+    show_y_axis_labels: true
+    show_y_axis_ticks: true
+    y_axis_tick_density: default
+    y_axis_tick_density_custom: 5
+    show_x_axis_label: true
+    show_x_axis_ticks: true
+    y_axis_scale_mode: linear
+    x_axis_reversed: false
+    y_axis_reversed: false
+    plot_size_by_field: false
+    trellis: ''
+    stacking: ''
+    limit_displayed_rows: true
+    legend_position: center
+    point_style: none
+    show_value_labels: false
+    label_density: 25
+    x_axis_scale: auto
+    y_axis_combined: true
+    ordering: none
+    show_null_labels: false
+    show_totals_labels: false
+    show_silhouette: false
+    totals_color: "#808080"
+    x_axis_zoom: true
+    y_axis_zoom: true
+    limit_displayed_rows_values:
+      show_hide: show
+      first_last: first
+      num_rows: '10'
+    show_row_numbers: true
+    transpose: false
+    truncate_text: true
+    hide_totals: false
+    hide_row_totals: false
+    size_to_fit: true
+    table_theme: white
+    enable_conditional_formatting: false
+    header_text_alignment: left
+    header_font_size: '12'
+    rows_font_size: '12'
     conditional_formatting_include_totals: false
     conditional_formatting_include_nulls: false
-    single_value_title: 2nd Decile
-    conditional_formatting: [{type: not null, value: !!null '', background_color: "#B31412",
-        font_color: !!null '', color_application: {collection_id: test, palette_id: test-sequential-0},
-        bold: false, italic: false, strikethrough: false, fields: !!null ''}]
+    show_sql_query_menu_options: false
+    show_totals: true
+    show_row_totals: true
+    truncate_header: false
+    minimum_column_width: 75
+    series_cell_visualizations:
+      category_attribution.p_value:
+        is_active: false
+      category_attribution.weight:
+        is_active: false
+        value_display: true
+    series_value_format:
+      category_attribution.weight: '0.000'
+      category_attribution.p_value: '0.0000'
+      category_attribution.standard_error: '0.0000'
     defaults_version: 1
-    hidden_pivots: {}
+    hidden_fields: [weight_order, category_attribution.standard_error, category_attribution.p_value,
+      category_attribution.processed_input]
+    show_null_points: true
     listen:
-      Session Date: sessions.session_date
-    row: 2
-    col: 15
-    width: 7
+      Processed Input: category_attribution.processed_input
+    row: 13
+    col: 0
+    width: 24
+    height: 6
+  - name: ''
+    type: text
+    title_text: ''
+    subtitle_text: ''
+    body_text: "## **Instructions** : \n\nThe top variables show the elasticities\
+      \ for each specific category. You can use the filter at the top to understand\
+      \ which are the campaigns, devices, sources or mediums that where more important\
+      \ to drive revenue. \n"
+    row: 10
+    col: 0
+    width: 24
+    height: 3
+  - name: " (2)"
+    type: text
+    title_text: ''
+    subtitle_text: ''
+    body_text: |
+      ***
+
+      ## Aggregated Value Based Bidding
+    row: 0
+    col: 0
+    width: 24
     height: 2
-  - title: Medium Prob cust_ids
-    name: Medium Prob cust_ids
+  - title: Mean Absolute Error
+    name: Mean Absolute Error
     model: ga4
-    explore: sessions
+    explore: evaluation
     type: single_value
-    fields: [future_purchase_prediction.count]
-    filters:
-      future_purchase_prediction.pred_probability_bucket: ">= 0.3 and < 0.4,>= 0.4 and < 0.5,>= 0.5 and < 0.6,>= 0.6 and < 0.7"
-      events.total_purchase_revenue_usd: NOT NULL
+    fields: [evaluation.MAE]
+    sorts: [evaluation.MAE]
     limit: 500
     column_limit: 50
     custom_color_enabled: true
@@ -252,193 +356,102 @@
     enable_conditional_formatting: true
     conditional_formatting_include_totals: false
     conditional_formatting_include_nulls: false
-    single_value_title: 5th Decile
+    single_value_title: Mean Absolute Error
+    value_format: '0.0000'
     conditional_formatting: [{type: not null, value: !!null '', background_color: "#1A73E8",
-        font_color: !!null '', color_application: {collection_id: test, palette_id: test-sequential-0},
-        bold: false, italic: false, strikethrough: false, fields: !!null ''}]
+        font_color: !!null '', color_application: {collection_id: 7c56cc21-66e4-41c9-81ce-a60e1c3967b2,
+          palette_id: 56d0c358-10a0-4fd6-aa0b-b117bef527ab}, bold: false, italic: false,
+        strikethrough: false, fields: !!null ''}]
     defaults_version: 1
-    hidden_pivots: {}
-    listen:
-      Session Date: sessions.session_date
-    row: 2
-    col: 8
-    width: 7
-    height: 2
-  - title: High Prob cust_ids
-    name: High Prob cust_ids
-    model: ga4
-    explore: sessions
-    type: single_value
-    fields: [future_purchase_prediction.count]
-    filters:
-      future_purchase_prediction.pred_probability_bucket: ">= 0.7 and < 0.8,>= 0.8 and < 0.9,>= 0.9"
-      events.total_purchase_revenue_usd: NOT NULL
-    limit: 500
-    column_limit: 50
-    custom_color_enabled: true
-    show_single_value_title: true
-    show_comparison: false
-    comparison_type: value
-    comparison_reverse_colors: false
-    show_comparison_label: true
-    enable_conditional_formatting: true
-    conditional_formatting_include_totals: false
-    conditional_formatting_include_nulls: false
-    custom_color: "#fcf9ff"
-    single_value_title: 7th Decile
-    conditional_formatting: [{type: not null, value: !!null '', background_color: "#F9AB00",
-        font_color: "#ffff", color_application: {collection_id: test, palette_id: test-sequential-0},
-        bold: false, italic: false, strikethrough: false, fields: !!null ''}]
-    defaults_version: 1
-    listen:
-      Session Date: sessions.session_date
-    row: 2
+    listen: {}
+    row: 28
     col: 0
     width: 8
+    height: 6
+  - title: MSLE
+    name: MSLE
+    model: ga4
+    explore: evaluation
+    type: single_value
+    fields: [evaluation.MSLE]
+    sorts: [evaluation.MSLE]
+    limit: 500
+    column_limit: 50
+    custom_color_enabled: true
+    show_single_value_title: true
+    show_comparison: false
+    comparison_type: value
+    comparison_reverse_colors: false
+    show_comparison_label: true
+    enable_conditional_formatting: true
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    single_value_title: Mean Squared Log error
+    value_format: '0.000000'
+    conditional_formatting: [{type: not null, value: !!null '', background_color: "#F9AB00",
+        font_color: "#FFFF", color_application: {collection_id: 7c56cc21-66e4-41c9-81ce-a60e1c3967b2,
+          palette_id: 56d0c358-10a0-4fd6-aa0b-b117bef527ab}, bold: false, italic: false,
+        strikethrough: false, fields: !!null ''}]
+    defaults_version: 1
+    listen: {}
+    row: 28
+    col: 8
+    width: 8
+    height: 6
+  - title: R2 Score
+    name: R2 Score
+    model: ga4
+    explore: evaluation
+    type: single_value
+    fields: [evaluation.r_squared]
+    sorts: [evaluation.r_squared]
+    limit: 500
+    column_limit: 50
+    custom_color_enabled: true
+    show_single_value_title: true
+    show_comparison: false
+    comparison_type: value
+    comparison_reverse_colors: false
+    show_comparison_label: true
+    enable_conditional_formatting: true
+    conditional_formatting_include_totals: false
+    conditional_formatting_include_nulls: false
+    single_value_title: R2  Score (Explained Variance)
+    value_format: '0.000000'
+    conditional_formatting: [{type: not null, value: !!null '', background_color: "#EA4335",
+        font_color: "#FFFF", color_application: {collection_id: 7c56cc21-66e4-41c9-81ce-a60e1c3967b2,
+          palette_id: 56d0c358-10a0-4fd6-aa0b-b117bef527ab}, bold: false, italic: false,
+        strikethrough: false, fields: !!null ''}]
+    defaults_version: 1
+    listen: {}
+    row: 28
+    col: 16
+    width: 8
+    height: 6
+  - name: " (3)"
+    type: text
+    title_text: ''
+    subtitle_text: ''
+    body_text: |+
+      ***
+
+      ## Model Metrics
+
+    row: 26
+    col: 0
+    width: 24
     height: 2
-  - title: Rolling 90 day Person Count by Predicted Bucket Across Weeks
-    name: Rolling 90 day Person Count by Predicted Bucket Across Weeks
-    model: ga4
-    explore: incremental_prediction
-    type: looker_line
-    fields: [incremental_prediction.week, incremental_prediction.pred_probability_bucket,
-      incremental_prediction.count]
-    pivots: [incremental_prediction.pred_probability_bucket]
-    sorts: [incremental_prediction.pred_probability_bucket, incremental_prediction.week,
-      incremental_prediction.count desc 0]
-    limit: 500
-    column_limit: 50
-    query_timezone: America/Ciudad_Juarez
-    x_axis_gridlines: false
-    y_axis_gridlines: true
-    show_view_names: false
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_label: false
-    show_x_axis_ticks: true
-    y_axis_scale_mode: linear
-    x_axis_reversed: false
-    y_axis_reversed: false
-    plot_size_by_field: false
-    trellis: ''
-    stacking: ''
-    limit_displayed_rows: false
-    legend_position: center
-    point_style: none
-    show_value_labels: false
-    label_density: 25
-    x_axis_scale: auto
-    y_axis_combined: true
-    show_null_points: true
-    interpolation: linear
-    color_application:
-      collection_id: b43731d5-dc87-4a8e-b807-635bef3948e7
-      palette_id: fb7bb53e-b77b-4ab6-8274-9d420d3d73f3
-      options:
-        steps: 5
-    y_axes: [{label: Person Count, orientation: left, series: [{axisId: incremental_prediction.count,
-            id: High - incremental_prediction.count, name: High}, {axisId: incremental_prediction.count,
-            id: Low - incremental_prediction.count, name: Low}, {axisId: incremental_prediction.count,
-            id: Medium - incremental_prediction.count, name: Medium}], showLabels: true,
-        showValues: true, unpinAxis: false, tickDensity: default, tickDensityCustom: 5,
-        type: linear}]
-    x_axis_zoom: true
-    y_axis_zoom: true
-    hide_legend: false
-    swap_axes: false
-    ordering: none
-    show_null_labels: false
-    show_totals_labels: false
-    show_silhouette: false
-    totals_color: "#808080"
-    defaults_version: 1
-    hidden_fields: []
-    hidden_points_if_no: []
-    hidden_pivots: {}
-    listen: {}
-    row: 8
-    col: 0
-    width: 22
-    height: 6
-  - title: Rolling 90 day Revenue (USD) by Predicted Bucket Across Weeks
-    name: Rolling 90 day Revenue (USD) by Predicted Bucket Across Weeks
-    model: ga4
-    explore: incremental_prediction
-    type: looker_line
-    fields: [incremental_prediction.week, incremental_prediction.pred_probability_bucket,
-      incremental_prediction.total_purchase_revenue_usd]
-    pivots: [incremental_prediction.pred_probability_bucket]
-    sorts: [incremental_prediction.pred_probability_bucket, incremental_prediction.week]
-    limit: 500
-    column_limit: 50
-    query_timezone: America/Ciudad_Juarez
-    x_axis_gridlines: false
-    y_axis_gridlines: true
-    show_view_names: false
-    show_y_axis_labels: true
-    show_y_axis_ticks: true
-    y_axis_tick_density: default
-    y_axis_tick_density_custom: 5
-    show_x_axis_label: false
-    show_x_axis_ticks: true
-    y_axis_scale_mode: linear
-    x_axis_reversed: false
-    y_axis_reversed: false
-    plot_size_by_field: false
-    trellis: ''
-    stacking: ''
-    limit_displayed_rows: false
-    legend_position: center
-    point_style: none
-    show_value_labels: false
-    label_density: 25
-    x_axis_scale: auto
-    y_axis_combined: true
-    show_null_points: true
-    interpolation: linear
-    color_application:
-      collection_id: b43731d5-dc87-4a8e-b807-635bef3948e7
-      palette_id: fb7bb53e-b77b-4ab6-8274-9d420d3d73f3
-      options:
-        steps: 5
-    y_axes: [{label: Revenue (USD), orientation: left, series: [{axisId: incremental_prediction.count,
-            id: High - incremental_prediction.count, name: High}, {axisId: incremental_prediction.count,
-            id: Low - incremental_prediction.count, name: Low}, {axisId: incremental_prediction.count,
-            id: Medium - incremental_prediction.count, name: Medium}], showLabels: true,
-        showValues: true, unpinAxis: false, tickDensity: default, tickDensityCustom: 5,
-        type: linear}]
-    x_axis_zoom: true
-    y_axis_zoom: true
-    hide_legend: false
-    swap_axes: false
-    ordering: none
-    show_null_labels: false
-    show_totals_labels: false
-    show_silhouette: false
-    totals_color: "#808080"
-    defaults_version: 1
-    hidden_fields: []
-    hidden_points_if_no: []
-    hidden_pivots: {}
-    listen: {}
-    row: 14
-    col: 0
-    width: 22
-    height: 6
   filters:
-  - name: Session Date
-    title: Session Date
+  - name: Processed Input
+    title: Processed Input
     type: field_filter
-    default_value: 90 day
+    default_value: ''
     allow_multiple_values: true
-    required: true
+    required: false
     ui_config:
-      type: relative_timeframes
-      display: inline
-      options: []
+      type: checkboxes
+      display: popover
     model: ga4
-    explore: sessions
+    explore: category_attribution
     listens_to_filters: []
-    field: sessions.session_date
+    field: category_attribution.processed_input
