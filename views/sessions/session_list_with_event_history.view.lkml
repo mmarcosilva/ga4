@@ -1,7 +1,7 @@
 include: "/views/event_data_dimensions/event_funnel.view"
 include: "/views/event_data_dimensions/page_funnel.view"
 
-view: session_list_w_event_hist {
+view: session_list_with_event_history {
   derived_table: {
     datagroup_trigger: ga4_main_datagroup
     partition_keys: ["session_date"]
