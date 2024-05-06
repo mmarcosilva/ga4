@@ -5,7 +5,7 @@ view: session_tags{
     partition_keys: ["session_date"]
     cluster_keys: ["sl_key","session_date"]
     #datagroup_trigger: ga4_default_datagroup
-    sql_trigger_value: ${session_list_w_event_hist.SQL_TABLE_NAME} ;;
+    sql_trigger_value: ${session_list_with_event_history.SQL_TABLE_NAME} ;;
     sql:SELECT DISTINCT sl.sl_key, sl.session_date
   , CASE WHEN key = 'medium' THEN value.string_value END AS medium
   , CASE WHEN key = 'source' THEN value.string_value END AS source
@@ -13,7 +13,7 @@ view: session_tags{
   , CASE WHEN key = 'page_referrer' THEN value.string_value END AS page_referrer
 FROM (
   SELECT sl_key, session_date, key, value,event_timestamp
-  FROM ${session_list_w_event_hist.SQL_TABLE_NAME} sl3
+  FROM ${session_list_with_event_history.SQL_TABLE_NAME} sl3
   CROSS JOIN UNNEST(sl3.event_params) AS sl1
   WHERE event_name in ('page_view')
     AND key IN ('medium','source','campaign','page_referrer')
@@ -21,7 +21,7 @@ FROM (
 ) AS sl
 JOIN (
   SELECT sl2.sl_key, sl2.session_date, MIN(event_timestamp) AS min_event_timestamp
-  FROM ${session_list_w_event_hist.SQL_TABLE_NAME} AS sl2
+  FROM ${session_list_with_event_history.SQL_TABLE_NAME} AS sl2
   GROUP BY sl2.sl_key, sl2.session_date
 ) AS min_events ON sl.sl_key = min_events.sl_key AND sl.session_date = min_events.session_date
 WHERE sl.event_timestamp = min_events.min_event_timestamp
