@@ -12,7 +12,7 @@ view: session_tags{
   , CASE WHEN key = 'campaign' THEN value.string_value END AS campaign
   , CASE WHEN key = 'page_referrer' THEN value.string_value END AS page_referrer
 FROM (
-  SELECT sl_key, session_date, key, value,event_timestamp
+  SELECT sl_key, sl3.session_date, key, value,event_timestamp
   FROM ${session_list_with_event_history.SQL_TABLE_NAME} sl3
   CROSS JOIN UNNEST(sl3.event_params) AS sl1
   WHERE event_name in ('page_view')
@@ -25,7 +25,7 @@ JOIN (
   GROUP BY sl2.sl_key, sl2.session_date
 ) AS min_events ON sl.sl_key = min_events.sl_key AND sl.session_date = min_events.session_date
 WHERE sl.event_timestamp = min_events.min_event_timestamp
-and {% incrementcondition %} session_date {% endincrementcondition %};;
+and {% incrementcondition %} sl.session_date {% endincrementcondition %};;
   }
   dimension: session_date {
     type: date
