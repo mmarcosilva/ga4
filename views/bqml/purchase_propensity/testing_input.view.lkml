@@ -3,8 +3,7 @@ view: testing_input {
   derived_table: {
     sql_trigger_value: ${training_input.SQL_TABLE_NAME} ;;
     sql:
-    select * from
-    (WITH
+    WITH
       visitors_labeled AS (
         SELECT
           user_pseudo_id,
@@ -209,7 +208,7 @@ view: testing_input {
       )
       SELECT
         *
-      FROM
-      CASE WHEN @{BQML_PARAMETER}='Yes' THEN user_model ELSE (SELECT 1) END;;
+      FROM user_model
+      WHERE "@{BQML_PARAMETER}"='Yes';;
   }
 }

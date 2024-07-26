@@ -53,7 +53,7 @@ select se.session_date as session_date
                       ,  d.geo__metro
                       ,  d.geo__sub_continent
                       ,  d.geo__region) geo_data
-    ,  se.event_data event_data
+    ,se.event_data
 from ${session_event_packing.SQL_TABLE_NAME} as se
 left join ${session_tags.SQL_TABLE_NAME} as sa
   on  se.sl_key = sa.sl_key
@@ -61,8 +61,7 @@ left join ${session_facts.SQL_TABLE_NAME} as sf
   on  se.sl_key = sf.sl_key
 left join ${device_geo.SQL_TABLE_NAME} as d
   on  se.sl_key = d.sl_key
-where {% incrementcondition %} se.session_date {%  endincrementcondition %}
-   ;;
+where {% incrementcondition %} se.session_date {%  endincrementcondition %};;
   }
 
 extends: [event_funnel, page_funnel]
@@ -132,7 +131,7 @@ extends: [event_funnel, page_funnel]
   dimension: event_data {
     hidden: yes
     type: string
-    sql: ${TABLE}.event_data ;;
+    sql:${TABLE}.event_data;;
     ## This is the parent array that contains the event_data struct elements. It is not directly useably as a dimension.
     ## It is necessary for proper unnesting in the model Join.
   }
@@ -164,7 +163,7 @@ extends: [event_funnel, page_funnel]
     group_label: "Pages"
     description: "Landing/Entrance Page (first 'Page View' event) of a Session."
     sql: (select coalesce(regexp_extract((select value.string_value from UNNEST(event_params) where key = "page_location"),r"(?:.*?[\.][^\/]*)([\/][^\?]+)"),'/')
-          from UNNEST(sessions.event_data) as event_history
+          from sessions.event_data as event_history
           where event_history.sl_key = (sessions.sl_key) and event_history.page_view_rank = 1 limit 1) ;;
   }
   dimension: exit_page {
@@ -173,7 +172,7 @@ extends: [event_funnel, page_funnel]
     description: "Exit Page (last 'Page View' event) of a Session."
 
     sql: (select coalesce(regexp_extract((select value.string_value from UNNEST(event_params) where key = "page_location"),r"(?:.*?[\.][^\/]*)([\/][^\?]+)"),'/')
-          from UNNEST(sessions.event_data) as event_history
+          from sessions.event_data as event_history
           where event_history.sl_key = (sessions.sl_key) and event_history.page_view_reverse_rank = 1 limit 1) ;;
   }
 

@@ -211,7 +211,7 @@ view: training_input {
       )
       SELECT
         *
-      FROM
-      CASE WHEN @{BQML_PARAMETER}='Yes' THEN user_model ELSE (SELECT 1) END;;
+      FROM user_model
+      WHERE "@{BQML_PARAMETER}"='Yes' ;;
   }
 }

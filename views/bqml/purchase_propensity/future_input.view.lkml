@@ -5,8 +5,7 @@ view: future_input {
     # partition_keys: ["session_date"]
     #cluster_keys: ["session_date"]
     sql:
-    select * from
-    (WITH
+    WITH
       visitors_labeled AS (
         SELECT
           user_pseudo_id,
@@ -211,7 +210,7 @@ view: future_input {
       )
       SELECT
         * EXCEPT(will_purchase_in_future)
-      FROM
-      CASE WHEN @{BQML_PARAMETER}='Yes' THEN user_model ELSE (SELECT 1,"1" as will_purchase_in_future) END;;
+      FROM user_model
+      WHERE "@{BQML_PARAMETER}"='Yes';;
   }
 }
