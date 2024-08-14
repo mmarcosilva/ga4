@@ -25,7 +25,8 @@ For anyone moving to GA4 from GA360, this represents a shift in scope. GA360 exp
 Each row in the event tables is a record of one event. There are several standard columns: event_date, event_timestamp, event_name, user_pseudo_id, for a full list of fields exported by default, see https://support.google.com/firebase/answer/7029846. In addition to single-value fields, there are nested fields as well.
 
 The simpler nested fields can be referenced with dot-notation sql definitions, as shown in this example of the “ECommerce Purchase Revenue” dimension:
-````  
+````json
+
   dimension: ecommerce__purchase_revenue {
     type: number
     sql: ${TABLE}.ecommerce.purchase_revenue ;;
@@ -33,12 +34,13 @@ The simpler nested fields can be referenced with dot-notation sql definitions, a
     group_item_label: "Purchase Revenue"
     value_format_name: usd
   }
+  
 ````  
 Here, “purchase_revenue” is an element of the ecommerce field.
 
 However, Some elements within GA4 are packaged as repeating key/value pairs such as the “event_params” field:
 
-````
+````json
 `event_params:[
   {
     "value": {
@@ -113,9 +115,9 @@ Similar to the Page View Rank, however ordered by descending event_timestamp.
 **Time To Next Page**
 This timestamp_difference function will only get elapsed time between the present ‘page_view’ event and the following ‘page_view’ event. If a session only has one ‘page_view’ event, this value will be 0.
 
-The results of the “session_list_with_event_history” CTE are then utilized for the following processes:
+The results of the “session_list_with_event_history” CTE are then utilized for the following processes, all of them are incremental derived tables to support big datasets:
 
-**“Session_facts” CTE:**
+**“Session_facts”**
 - Session Event Count - A count of all events in a given session (grouped by sl_key).
 - Session Page View Count - A count of all “page_view” events in a given session (grouped by sl_key).
 - Engaged Events - A count of all events identified as ‘Engaged’, an event_parameter (grouped by sl_key).
@@ -123,17 +125,17 @@ The results of the “session_list_with_event_history” CTE are then utilized f
 - Is First Visit Session? - A boolean (yes/no) value indicating if the session contains a ‘first_visit’ event, indicative of a first visit session.
 - Session Length Minutes - A timestamp_difference function between the first event_timestamp in a session and the last event_timestamp in a session. Sessions with a singular event_timestamp (even with multiple events) will have a value of 0.
 
-**“Session Tags” CTE:**
+**“Session Tags”**
 The purpose of this CTE is to extract session-specific tags for Medium, Source, Campaign, and Page Referrer values. These values follow the “Last Non-Direct Click” method of attribution. For the purposes of this block, the “traffic_source” column present in the source event tables was not used. The “traffic_source” values are set on a user’s initial visit to a site or application, and these values can persist beyond the scope of a single session.
 - Medium
 - Source
 - Campaign
 - Page Referrer
 
-**“DeviceGeo” CTE:**
+**“DeviceGeo”**
 The device and geographic metadata of a session are being extracted from the “session_start” event.
 
-**“Session Event Packing” CTE:**
+**“Session Event Packing”**
 This process takes the original row output of “session_list_with_event_history” and condenses it into one row per session, with all the event history of the session nested into an array. This is used later for efficient unnesting of elements without needing to re-group events into sessions at the time of the query. The output is the sl_key, its components, and a nested field called “event_data”.
 
 The final select statement in this derived table combines the elements of each process into one row for each session that contains:
@@ -148,8 +150,8 @@ The final select statement in this derived table combines the elements of each p
 - Geo Data - Nested Element with Geo columns from output of “DeviceGeo”.
 - Event Data - Array of all event components that make up this session.
 
-## Incremental Derived Table
-The output of this SQL query is stored as an incremental persistent derived table. This allows appending of new rows to an existing table, instead of a complete drop/create with every scheduled run. The key upon which the incremental updates happen is “Session Date”. To accommodate potential delays in full data delivery, the increment_offset is set to 3. This means for each run, up to 3 days of data may be inserted.
+## Incremental Derived Tables
+The output of most SQL queries are stored as an incremental persistent derived table. This allows appending of new rows to an existing table, instead of a complete drop/create with every scheduled run. The key upon which the incremental updates happen is “Session Date”. To accommodate potential delays in full data delivery, the increment_offset is set to 0. However, the BQ schema normally takes 3 days to fully backfill a sharded table, if you want to change the increment_offset to 3 you can do it on the refinements document.
 
 The initial build of this table will generate a SQL query inserting “1=1”, running across all event tables present in the target dataset. Subsequent runs will insert appropriate “WHERE” syntax to limit the results to the date range specified by the “increment_offset” value.
 
@@ -163,7 +165,7 @@ The components of the GA4 Block are isolated into folders for the file type/purp
 - Explores. Explores have been separated from the model file for potential re-use/extension/refinement. The only explore included by default is “sessions”. This “sessions” explore is where the attributes defined above are being included, as well as all views utilized.
 - Models. The GA4 model file is present here. It includes the sessions explore, the LookML dashboards, and a datagroup specific to this model.
 - Views
-- - BQML Sub-Folder contains the predictions.view file that creates the BQML propensity model. This view is commented-out by default. (See BQML under Notes)
+- - BQML Sub-Folder contains the tables needed for the 3 models included on the block: propensity model, event forecasting model, and Aggregated  Value Based Bidding. You can opt out of these models when installing. (See BQML under Notes)
 - - Event Data Dimensions Sub-Folder contains views that are extended or unnested via the “Events” view in the parent folder.
 - The remaining files are the primary views not directly related to Events.
 - Other. manifest.lkml is present in the root directory, and is where the instance constants are defined.
@@ -190,12 +192,14 @@ The definition for a repeating key/value field uses the following format:
 
 
 Here is an example of LookML used to define a nested dimension.
+````json
 dimension: event_param_all_data {
   group_label: "Event: Parameters"
   label: "All Data"
   type: number
   sql: (SELECT value.double_value FROM UNNEST(event_params) WHERE key = "all_data") ;;
 }
+````
 
 Using this method of sub-selecting allows a single row to return for an event with all event parameters selected in horizontally extending columns. If we were to unnest event_params directly and define the dimensions from the unnested results, there would be multiple rows per event:
 
@@ -216,7 +220,7 @@ If you are initiating the block with a large amount of custom event parameters a
 
 Sample Query for obtaining a list of all event parameter keys and their respective values:
 
- ````
+ ````sql
  SELECT  ep.key
  , case when count(value.string_value) > 0 then true else false end as string_value_populated
  , case when count(value.int_value) > 0 then true else false end as int_value_populated
@@ -238,7 +242,7 @@ Another file that is extended into “events.view”, and not referenced in the 
 
 Similar to how the landing and exit pages are obtained at the session-level, we are able to query within the scope of the session from within the unnested element. For example we can obtain the 3rd page view in a session with this dimension:
 
-````
+````json
   dimension: page_path_3 {
     view_label: "Page Flow"
     group_label: "Page Path"
@@ -267,7 +271,7 @@ The Page Funnel view is extended into “sessions.view”. The dimensions and me
 
 The “tag” dimensions are what qualifies subsequent page views for inclusion in the resultset. If you filter for a value on Page 1, any subsequent page views that do not follow a qualifying “Page 1” event will be excluded from the measures defined in this view. This process repeats for all subsequently filtered page ranks (up to 6). This can be seen in the difference between the page_1_tag dimension and page_6_tag:
 
-````
+````json
   dimension: page_1_tag {
     ...
     sql: case when {% condition page_1_filter %} ${page_1} {% endcondition %}
@@ -294,7 +298,7 @@ The event_funnel view is set up similarly to “page_funnel.view”, and is exte
 Each Event Parameter you enable on GA4 will need to have a new dimension and any applicable measures created, the dimensions included in this block correspond to the list of automatically tracked events [here] (https://support.google.com/analytics/answer/9234069?hl=en).
 
 Sample Query for obtaining a list of all event parameter keys and what value they use:
-```
+```sql
  SELECT  ep.key
  , case when count(value.string_value) > 0 then true else false end as string_value_populated
  , case when count(value.int_value) > 0 then true else false end as int_value_populated
@@ -315,6 +319,24 @@ The Custom Goal Conversions by default are only focused on Event Type and Page N
 * If you are utilizing user\_id instead of user\_pseudo\_id, you will need to replace references to the user\_pseudo\_id with user\_id in the derived key ("sl\_key") definition in sessions.view's derived table definition, and in the user-centric measure definitions.
 * BQML Customer Purchase Propensity Score: This block includes a demonstration of utilizing GA4 data to train a BQML customer purchase propensity score. To ease implementation costs, this has been commented-out by default. To implement this feature, uncomment the BQML View Files and BQML Fields on the sessions.view file.
 * For GA360 Users migrating to GA4: Not all fields are the same as in the UI due to GA4's integration of mobile apps. The Incremental Persistent Derived Table will help you navigate through the fields you are already familiarized with.
+
+## Troubleshooting
+Some common errors have occured when installing the block.  We will try to list some of them and how to proceed.
+
+* Looker "CREATE TABLE as SELECT: 400 Bad Request POST" PDT error - ‘Bad int64’
+    * This error normally occurs when the schema selected was changed from the original export. Since the BQ schema has the pattern `events_YYYYMMDD` or `events_intraday_YYYYMMDD`the Bad int64 comes from doing a query that is not able to parse the date from the table names. 
+
+* Resources exceeded when querying
+    * This happens when bringing a lot of data as a whole into the block. Since these are date sharded tables and schema needs to be validates across all of them, it normally takes a while to complete. However, sometimes it overflows the slot allocations. If you have a doubt if you will be having this kind of issue, it is recommended to query just a small amount of data for the first build (30 days for example) and then bring more data into the block. This can be done by uncommenting the filter stated on the `session_list_with_event_history` table. 
+````sql
+
+    WHERE timestamp(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'[0-9]+'))) >=
+((TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -15 DAY)))
+    and  timestamp(PARSE_DATE('%Y%m%d', REGEXP_EXTRACT(_TABLE_SUFFIX,r'[0-9]+'))) <=
+  ((TIMESTAMP_ADD(TIMESTAMP_ADD(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), DAY), INTERVAL -15 DAY), INTERVAL 16 DAY)))
+  
+````
+Sample filter for 15 days worth of data.
 
 ## Coming Soon
 1. Leverage advanced analytics to be able to predict which customers are likely to make another purchase in the future based off of their historical actions.
