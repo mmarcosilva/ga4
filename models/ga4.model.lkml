@@ -8,7 +8,7 @@ label: "Google Analytics 4"
 
 
 datagroup: ga4_main_datagroup {
-  sql_trigger:  SELECT CURRENT_DATE();;
+  sql_trigger:  SELECT COUNT(*) FROM `@{GA4_SCHEMA}.@{GA4_TABLE_VARIABLE}`;;
   max_cache_age: "3 hour"
 }
 
