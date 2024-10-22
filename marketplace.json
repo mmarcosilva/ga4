@@ -18,8 +18,7 @@
     },
     "EVENT_COUNT": {
         "label": "Event Count Limit"
-    }
-  },
+    },
     "BQML_PARAMETER": {
         "label": "BQML Models Included"
     }
