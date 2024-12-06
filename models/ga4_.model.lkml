@@ -1,4 +1,4 @@
-connection: "@{GA4_CONNECTION}"
+connection: "ga4-connection"
 
 include: "/dashboards/*.dashboard"
 include: "/explores/*.explore.lkml"
@@ -23,3 +23,5 @@ datagroup: ga4_attribution_channel {
 
 
 persist_with: ga4_main_datagroup
+
+explore: model_arima {}
