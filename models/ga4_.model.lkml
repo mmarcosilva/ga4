@@ -24,4 +24,7 @@ datagroup: ga4_attribution_channel {
 
 persist_with: ga4_main_datagroup
 
-explore: model_arima {}
+explore: prueba_ga4 {
+
+}
+explore: training_table {}
